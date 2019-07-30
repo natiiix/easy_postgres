@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as f:
     readme = f.read()
 
 setup(
-    name="postgresql-natiiix",
+    name="easy_postgres",
     version="0.0.1",
     author="Ivo Meixner",
     author_email="natiwastaken@gmail.com",
@@ -12,7 +12,7 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     license="MIT",
-    url="http://github.com/natiiix/postgresql",
+    url="http://github.com/natiiix/easy_postgres",
     keywords="postgresql postgres pgsql psql database psycopg2",
     packages=find_packages(),
     classifiers=[

@@ -1,13 +1,27 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+
+with open("README.md", "r", encoding="utf-8") as f:
+    readme = f.read()
 
 setup(
-    name='postgresql',
-    version='0.1',
-    description='Lightweight psycopg2 wrapper focused on ease of use',
-    url='http://github.com/natiiix/postgresql',
-    author='Ivo Meixner',
-    author_email='natiwastaken@gmail.com',
-    license='MIT',
-    packages=['postgresql'],
-    zip_safe=False
+    name="postgresql-natiiix",
+    version="0.0.1",
+    author="Ivo Meixner",
+    author_email="natiwastaken@gmail.com",
+    description="Lightweight psycopg2 wrapper focused on ease of use",
+    long_description=readme,
+    long_description_content_type="text/markdown",
+    license="MIT",
+    url="http://github.com/natiiix/postgresql",
+    keywords="postgresql postgres pgsql psql database psycopg2",
+    packages=find_packages(),
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Database"
+    ],
+    install_requires=[
+        "psycopg2"
+    ]
 )

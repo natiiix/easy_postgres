@@ -8,7 +8,7 @@ setup(
     version="0.0.3",
     author="Ivo Meixner",
     author_email="natiwastaken@gmail.com",
-    description="Abstraction layer for PostgreSQL database manipulation based on the `psycopg2` package",
+    description="Abstraction layer for PostgreSQL database manipulation based on the psycopg2 package",
     long_description=readme,
     long_description_content_type="text/markdown",
     license="MIT",

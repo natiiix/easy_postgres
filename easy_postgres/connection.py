@@ -1,5 +1,5 @@
 import psycopg2
-from . import Dictionary
+from .dictionary import Dictionary
 
 
 class Connection:

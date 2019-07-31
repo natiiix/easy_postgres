@@ -88,21 +88,21 @@ class Connection:
 
     @staticmethod
     def _fetch_one(cursor, row_callback):
-        return row_callback(cursor.fetchone()) \
+        return row_callback(cursor.fetchone(), cursor) \
             if cursor.rowcount == 1 else None
 
     @staticmethod
     def _fetch_all(cursor, row_callback):
-        return [row_callback(r) for r in cursor.fetchall()] \
-            if cursor.rowcount else[]
+        return [row_callback(r, cursor) for r in cursor.fetchall()] \
+            if cursor.rowcount else []
 
     @staticmethod
     def _fetch_iter(cursor, row_callback):
         for _ in range(cursor.rowcount):
-            yield row_callback(cursor.fetchone())
+            yield row_callback(cursor.fetchone(), cursor)
 
     @staticmethod
-    def _row_tuple(row):
+    def _row_tuple(row, _):
         return row[0] if len(row) == 1 else row
 
     @staticmethod

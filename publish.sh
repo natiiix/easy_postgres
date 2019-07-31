@@ -2,6 +2,9 @@
 
 set -e
 
+# Make sure the output directory is empty
+rm -rfv ./dist/*
+
 # Install dependencies (SetupTools and Twine)
 pip3 install --user -r ./requirements.txt
 
@@ -10,6 +13,3 @@ python3 ./setup.py sdist bdist_wheel
 
 # Upload the package to PyPI
 python3 -m twine upload ./dist/*
-
-# Clean up temporary build directories
-rm -rfv ./dist ./build

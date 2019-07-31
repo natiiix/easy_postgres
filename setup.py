@@ -22,6 +22,6 @@ setup(
         "Topic :: Database"
     ],
     install_requires=[
-        "psycopg2"
+        "psycopg2-binary"
     ]
 )

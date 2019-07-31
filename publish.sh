@@ -6,7 +6,7 @@ set -e
 rm -rfv ./dist/*
 
 # Install dependencies (SetupTools and Twine)
-pip3 install --user -r ./requirements.txt
+pip3 install --upgrade --user -r ./requirements.txt
 
 # Build the package
 python3 ./setup.py sdist bdist_wheel

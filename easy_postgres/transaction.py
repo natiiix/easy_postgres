@@ -1,11 +1,11 @@
 class Transaction:
     def __init__(self, conn):
         self.conn = conn
-        self.autocommit = conn.autocommit
+        self.autocommit = conn.conn.autocommit
 
     def __enter__(self):
         if self.autocommit:
-            self.conn.autocommit = False
+            self.conn.conn.autocommit = False
 
         return self
 
@@ -18,4 +18,4 @@ class Transaction:
             self.conn.commit()
 
         if self.autocommit:
-            self.conn.autocommit = True
+            self.conn.conn.autocommit = True

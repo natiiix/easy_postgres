@@ -16,6 +16,11 @@ class Connection:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
+        if exc_type or exc_value or exc_traceback:
+            self.rollback()
+        else:
+            self.commit()
+
         self.close()
 
     def __del__(self):
@@ -29,6 +34,9 @@ class Connection:
 
     def close(self):
         self.conn.close()
+
+    def rollback(self):
+        self.conn.rollback()
 
     def commit(self):
         self.conn.commit()

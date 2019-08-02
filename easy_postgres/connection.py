@@ -9,6 +9,7 @@ class Connection:
 
     def __init__(self, dsn):
         self.conn = psycopg2.connect(dsn)
+        self.conn.autocommit = True
 
     def __enter__(self):
         return self
@@ -81,7 +82,6 @@ class Connection:
         # Handle query results
         result = fetch_callback(cur, row_callback)
 
-        self.commit()
         cur.close()
 
         return result

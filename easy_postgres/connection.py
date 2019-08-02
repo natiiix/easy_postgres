@@ -1,5 +1,6 @@
 import psycopg2
 from .dictionary import Dictionary
+from .transaction import Transaction
 
 
 class Connection:
@@ -7,9 +8,9 @@ class Connection:
     Hopefully an easier-to-use wrapper for the psycopg2 Connection class.
     """
 
-    def __init__(self, dsn):
+    def __init__(self, dsn, autocommit=True):
         self.conn = psycopg2.connect(dsn)
-        self.conn.autocommit = True
+        self.conn.autocommit = autocommit
 
     def __enter__(self):
         return self
@@ -34,6 +35,9 @@ class Connection:
 
     def cursor(self):
         return self.conn.cursor()
+
+    def transaction(self):
+        return Transaction(self)
 
     def one(self, query, *args, **kwargs):
         return self._exec(query, Connection._fetch_one, Connection._row_tuple, *args, **kwargs)

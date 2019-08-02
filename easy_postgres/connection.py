@@ -47,6 +47,9 @@ class Connection:
     def transaction(self):
         return Transaction(self)
 
+    def run(self, query, *args, **kwargs):
+        return self._exec(query, None, None, *args, **kwargs)
+
     def one(self, query, *args, **kwargs):
         return self._exec(query, Connection._fetch_one, Connection._row_tuple, *args, **kwargs)
 
@@ -66,8 +69,6 @@ class Connection:
         return self._exec(query, Connection._fetch_iter, Connection._row_dict, *args, **kwargs)
 
     def _exec(self, query, fetch_callback, row_callback, *args, **kwargs):
-        cur = self.cursor()
-
         # Handle variable-length argument list
         if len(args) == 1:
             first = args[0]
@@ -88,15 +89,12 @@ class Connection:
 
             params.update(kwargs)
 
-        # Execute the query
-        cur.execute(query, params)
+        with self.cursor() as cur:
+            cur.execute(query, params)
 
-        # Handle query results
-        result = fetch_callback(cur, row_callback)
-
-        cur.close()
-
-        return result
+            # Handle query results
+            if fetch_callback:
+                return fetch_callback(cur, row_callback)
 
     @staticmethod
     def _fetch_one(cursor, row_callback):

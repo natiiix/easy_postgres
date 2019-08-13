@@ -1,3 +1,6 @@
+"""Module containing the smart `Dictionary` class."""
+
+
 class Dictionary(dict):
     """
     Extended dictionary that supports access to items via attributes.

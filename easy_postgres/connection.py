@@ -51,28 +51,28 @@ class Connection:
         return self._exec(query, None, None, *args, **kwargs)
 
     def one(self, query, *args, **kwargs):
-        return self._exec(query, Connection._fetch_one, Connection._row_tuple, *args, **kwargs)
+        return self._exec(query, _fetch_one, _row_tuple, *args, **kwargs)
 
     def one_dict(self, query, *args, **kwargs):
-        return self._exec(query, Connection._fetch_one, Connection._row_dict, *args, **kwargs)
+        return self._exec(query, _fetch_one, _row_dict, *args, **kwargs)
 
     def all(self, query, *args, **kwargs):
-        return self._exec(query, Connection._fetch_all, Connection._row_tuple, *args, **kwargs)
+        return self._exec(query, _fetch_all, _row_tuple, *args, **kwargs)
 
     def all_dict(self, query, *args, **kwargs):
-        return self._exec(query, Connection._fetch_all, Connection._row_dict, *args, **kwargs)
+        return self._exec(query, _fetch_all, _row_dict, *args, **kwargs)
 
     def iter(self, query, *args, **kwargs):
-        return self._exec(query, Connection._fetch_iter, Connection._row_tuple, *args, **kwargs)
+        return self._exec(query, _fetch_iter, _row_tuple, *args, **kwargs)
 
     def iter_dict(self, query, *args, **kwargs):
-        return self._exec(query, Connection._fetch_iter, Connection._row_dict, *args, **kwargs)
+        return self._exec(query, _fetch_iter, _row_dict, *args, **kwargs)
 
     def _exec(self, query, fetch_callback, row_callback, *args, **kwargs):
         # Handle variable-length argument list
         if len(args) == 1:
             first = args[0]
-            if isinstance(first, tuple) or isinstance(first, dict):
+            if isinstance(first, (tuple, dict)):
                 params = first
             elif isinstance(first, list):
                 params = tuple(first)
@@ -93,28 +93,31 @@ class Connection:
             cur.execute(query, params)
 
             # Handle query results
-            if fetch_callback:
-                return fetch_callback(cur, row_callback)
+            return fetch_callback(cur, row_callback)
 
-    @staticmethod
-    def _fetch_one(cursor, row_callback):
-        return row_callback(cursor.fetchone(), cursor) \
-            if cursor.rowcount == 1 else None
 
-    @staticmethod
-    def _fetch_all(cursor, row_callback):
-        return [row_callback(r, cursor) for r in cursor.fetchall()] \
-            if cursor.rowcount else []
+def _fetch_none(_, __):
+    return None
 
-    @staticmethod
-    def _fetch_iter(cursor, row_callback):
-        for _ in range(cursor.rowcount):
-            yield row_callback(cursor.fetchone(), cursor)
 
-    @staticmethod
-    def _row_tuple(row, _):
-        return row[0] if len(row) == 1 else row
+def _fetch_one(cursor, row_callback):
+    return row_callback(cursor.fetchone(), cursor) \
+        if cursor.rowcount == 1 else None
 
-    @staticmethod
-    def _row_dict(row, cursor):
-        return Dictionary({column.name: row[i] for i, column in enumerate(cursor.description)})
+
+def _fetch_all(cursor, row_callback):
+    return [row_callback(r, cursor) for r in cursor.fetchall()] \
+        if cursor.rowcount else []
+
+
+def _fetch_iter(cursor, row_callback):
+    for _ in range(cursor.rowcount):
+        yield row_callback(cursor.fetchone(), cursor)
+
+
+def _row_tuple(row, _):
+    return row[0] if len(row) == 1 else row
+
+
+def _row_dict(row, cursor):
+    return Dictionary({column.name: row[i] for i, column in enumerate(cursor.description)})

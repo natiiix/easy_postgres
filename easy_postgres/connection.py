@@ -97,7 +97,7 @@ class Connection:
 
     def run(self, query, *args, **kwargs):
         """Run the SQL query and return `None`."""
-        return self._exec(query, None, None, *args, **kwargs)
+        return self._exec(query, _fetch_none, None, *args, **kwargs)
 
     def one(self, query, *args, **kwargs):
         """

@@ -168,11 +168,18 @@ class Connection:
 
             params.update(kwargs)
 
-        with self.cursor() as cur:
-            cur.execute(query, params)
+        # Execute the query
+        cur = self.cursor()
+        cur.execute(query, params)
 
-            # Handle query results
-            return fetch_callback(cur, row_callback)
+        # Handle query results
+        result = fetch_callback(cur, row_callback)
+
+        # Closing the cursor immediately would be the generator
+        if fetch_callback is not _fetch_iter:
+            cur.close()
+
+        return result
 
 
 def _fetch_none(_, __):
@@ -193,9 +200,15 @@ def _fetch_all(cursor, row_callback):
 
 
 def _fetch_iter(cursor, row_callback):
-    """Fetch rows one by one and yield them as a generator."""
+    """
+    Fetch rows one by one and yield them as a generator.
+
+    Once the generator runs out of rows, it will close the cursor.
+    """
     for _ in range(cursor.rowcount):
         yield row_callback(cursor.fetchone(), cursor)
+
+    cursor.close()
 
 
 def _row_tuple(row, _):

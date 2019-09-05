@@ -18,6 +18,7 @@ Primary focuses are **lightweight API** and **high flexibility** when it comes t
       - [`Connection.XXX_dict` methods](#connectionxxxdict-methods)
     - [`Dictionary` class](#dictionary-class)
       - [Accessing Items](#accessing-items)
+    - [`Transaction` class](#transaction-class)
   - [License](#license)
 
 ## WARNING: Work in Progress
@@ -28,7 +29,7 @@ Primary focuses are **lightweight API** and **high flexibility** when it comes t
 
 ### `Connection` class
 
-To do anything, you must first create an instance of the `Connection` class. Give the instructor a [DSN](https://en.wikipedia.org/wiki/Data_source_name). The DSN can take many forms, so please check the [`psycopg2.connect()` function documentation](http://initd.org/psycopg/docs/module.html#psycopg2.connect) for more details.
+To do anything, you must first create an instance of the `Connection` class. Give the instructor a [DSN](https://en.wikipedia.org/wiki/Data_source_name). The DSN can take many forms, so please check the [`psycopg2.connect` function documentation](http://initd.org/psycopg/docs/module.html#psycopg2.connect) for more details.
 
 Once you have a `Connection`, you are ready to run any common SQL query (`SELECT`, `INSERT`, `UPDATE`, `DELETE` should definitely work; the rest should probably work, but it is not guaranteed).
 
@@ -84,6 +85,24 @@ For the purpose of this example, imagine you ran an SQL query that returned a si
 | Attribute     | N/A                      | `print(result.price)`    |
 
 You can use whichever way of accessing the items you prefer. If you want, you can even cast the `Dictionary` back to a `dict` for better compatibility. Being able to access items as attributes simply seems more convenient and easier to read.
+
+### `Transaction` class
+
+This class can be used to execute several SQL queries in a series without intermediate commits. If an exception occurs during any of the queries, all the changes made during the transaction will be rolled back. Otherwise, the changes will be committed all at once when you exit the transaction block. This prevents committing only partial changes when an error occurs, which could lead to an unexpected state of the database.
+
+Keep in mind that this `Transaction` class is by no means related to the SQL `TRANSACTION`.
+
+Instances of this class are only meant to be used in the head of `with` blocks (see code below for intended usage). It is preferable to create a `Transaction` by calling the `Connection.transaction` method instead of calling the constructor manually (even though there is no difference as of writing this). Please do not create multiple `Transaction`s at once using the same `Connection`.
+
+```py3
+conn = Connection("postgresql:///db")
+with conn.transaction():
+    row_id = conn.one("INSERT INTO table (id, value) VALUES (10, 'Hello World!') RETURNING id;")
+    prev_id = conn.one("SELECT MAX(id) FROM table WHERE id < %s;", row_id)
+    conn.run("UPDATE table SET value = 'New Value' WHERE id = %s;", prev_id)
+```
+
+This is perhaps kind of a silly code, but it demonstrates the functionality. If one of the queries fails (throws an exception), no changes will be committed. If they all succeed, the changes will be made after the last query is executed and the `with` block is exited.
 
 ## License
 

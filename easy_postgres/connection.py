@@ -17,7 +17,15 @@ class Connection:
     """
 
     def __init__(self, dsn, autocommit=True):
-        """Initialize a new PostgreSQL connection using a DSN."""
+        """
+        Initialize a new PostgreSQL connection using a DSN.
+
+        Raises:
+            psycopg2.OperationalError - If DSN is not valid.
+
+        """
+        # Setting `conn` to `None` will make sure it is never undefined.
+        self.conn = None
         self.conn = psycopg2.connect(dsn)
         self.conn.autocommit = autocommit
 
